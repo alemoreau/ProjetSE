@@ -1,2 +1,2 @@
 # ProjetSE
-Projet système d'exploitation, Option Robot
+Projet système embarqué, Option Robot
