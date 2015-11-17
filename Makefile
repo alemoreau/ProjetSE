@@ -1,6 +1,8 @@
 CC=avr-gcc
+SRC=serial
 
-spi: spi.c
-	$(CC) -o spi.out -Os spi.c -mmcu=atmega328p
-	avr-objcopy -O binary spi.out spi.bin
-	avrdude -p m328p -P /dev/ttyACM0 -c arduino -U flash:w:spi.bin
+$(SRC): $(SRC).c
+	$(CC) -o $(SRC).out -Os $(SRC).c -mmcu=atmega328p
+	avr-objcopy -O binary $(SRC).out $(SRC).bin
+	avrdude -p m328p -P /dev/ttyACM0 -c arduino -U flash:w:$(SRC).bin
+
