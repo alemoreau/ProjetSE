@@ -56,8 +56,8 @@ int main(void)
     sei();                    // turn on interrupts
     while(1)
     {
-		USART_Transmit(charbuff);
-		_delay_ms(1);
+		//USART_Transmit(charbuff);
+		//_delay_ms(1);
     }
 }
 
@@ -78,6 +78,5 @@ ISR(INT0_vect)
 		charbuff = buffer;
 		bufferPos =0;
 		buffer = 0;
-		_delay_ms(250);
 	}
 }

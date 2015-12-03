@@ -1,5 +1,5 @@
 #define F_CPU 16000000UL       
-#define BAUD 250000
+#define BAUD 1000000
 #define UBRR ((F_CPU)/(BAUD*16UL)-1)
 
 #define SIZE 1024
@@ -7,7 +7,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-
+volatile int count = 0;
 volatile char current_time = 0;
 volatile char current_state = 0;
 const unsigned char MASK_STATE = 128; // 1000000
@@ -143,16 +143,18 @@ ISR (INT0_vect)
   char data = 0;                                                                                                                             
   int value = (PIND & (1<<PD4)) ? 1 :0;                                                                                                               
   int clk = (PIND & (1<<PD2)) ? 1 :0;                                                                                                                
-  char msg[3];
+  char msg[2];
                                                                                                                                                      
   data = (clk << 1);                                                                                                                                 
   data |= value;   
 
 	msg[0] = data;
 	msg[1] = '\n';
-	msg[2] = '\r';
-
+//	msg[2] = '\r';
+	/*
   fifo_write(uart_fifo, msg, 3);
+  */
+  count += 2;
   
   /*uart_transmit(data); 
   for (i = 0; i < 8 ; ++i)
@@ -162,14 +164,16 @@ ISR (INT0_vect)
   uart_transmit('\n');                        
   uart_transmit('\r');  
 
-  */
-  /*
+  
+  
   for (i = 0; i < 8; ++i)
     msg[i] = '0'+ ((data >> (7-i)) & 1);
   msg[8] = '\n';
   msg[9] = '\r';
-  fifo_write(uart_fifo, msg, 10);
+  
   */
+  fifo_write(uart_fifo, msg, 2);
+  
 }
 
 ISR(TIMER1_COMPA_vect)
@@ -209,19 +213,28 @@ void uart_transmit_fifo()
 
 
 int main() {
+  count = 0;
   char buf[SIZE];
   fifo_t fifo;
   uart_fifo = &fifo;
   
   uart_init();                                                  
-  timer_init();
+  //timer_init();
+
+  
   fifo_init(uart_fifo, buf, SIZE);
 
   DDRD = ~((_BV(PD2))|(_BV(PD4)));                                                                                                                  
   PORTD = ~((0 << PORTD2)|(1 << PORTD4));
 
+    EICRA |= (1 << ISC00);    // set INT0 to trigger on ANY logic change
+  EIMSK |= (1 << INT0);
+  
+    sei();          // enable global interrupts
+
 	while(1)
 	{
+		/*
 		uart_transmit(uart_fifo->tail);
 		uart_transmit('\n');
 		uart_transmit('\r');
@@ -232,13 +245,15 @@ int main() {
 		uart_transmit('\r');
 		
 		_delay_ms(1000);
+		*/
 		
-		
-		if (uart_fifo->head < uart_fifo->tail )
+		if (count != 0)
+		{
 			uart_transmit_fifo();
+			count--;
+		}
 	}
-  return 0;
-
+	return 0;
 }
 
 
