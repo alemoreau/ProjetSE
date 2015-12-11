@@ -1,5 +1,5 @@
 #define F_CPU 16000000UL       
-#define BAUD 1000000
+#define BAUD 115200
 #define UBRR ((F_CPU)/(BAUD*16UL)-1)
 
 #define SIZE 1024
@@ -97,7 +97,7 @@ void timer_init(void)
 
   TCCR1A = 0;     // set entire TCCR1A register to 0
   TCCR1B = 0;     // same for TCCR1B
-
+  
   // set compare match register to desired timer count:
   OCR1A = 15624; //16000000 / ((1024) * (15624+1)) = 1Hz
   //OCR1A = 124 ; //16000000 /(124+1) = 128 kHz
@@ -130,51 +130,29 @@ void timer_init(void)
 
 ISR (INT0_vect)
 {
-  /*current_state = ~current_state;
-  char message = (current_time & MASK_TIME) | (current_state & MASK_STATE) ;
-  char i;
-  //uart_transmit(message);
-  uart_transmit('b');
-  for (i = 0; i < 8 ; ++i)
-      uart_transmit('0'+ ((message >> (7-i)) & 1));
-  uart_transmit('\n');
-  uart_transmit('\r');*/
   char i;
   char data = 0;                                                                                                                             
   int value = (PIND & (1<<PD4)) ? 1 :0;                                                                                                               
   int clk = (PIND & (1<<PD2)) ? 1 :0;                                                                                                                
-  char msg[2];
-                                                                                                                                                     
+  char msg[10];                                                                                                                                                     
   data = (clk << 1);                                                                                                                                 
   data |= value;   
 
-	msg[0] = data;
-	msg[1] = '\n';
-//	msg[2] = '\r';
+  //msg[0] = data;
+  //msg[1] = '\n';
+  //	msg[2] = '\r';
 	/*
   fifo_write(uart_fifo, msg, 3);
   */
-  count += 2;
-  
-  /*uart_transmit(data); 
-  for (i = 0; i < 8 ; ++i)
-    uart_transmit('0'+ ((data >> (7-i)) & 1));
-  
-  uart_transmit('\n');                        
-  uart_transmit('\n');                        
-  uart_transmit('\r');  
-
   
   
-  for (i = 0; i < 8; ++i)
-    msg[i] = '0'+ ((data >> (7-i)) & 1);
-  msg[8] = '\n';
-  msg[9] = '\r';
-  
-  */
-  fifo_write(uart_fifo, msg, 2);
-  
+  //for (i = 0; i < 8; ++i)
+  //msg[i] = '0'+ ((data >> (7-i)) & 1);
+  //msg[8] = '\n';
+  //msg[9] = '\r';
+  fifo_write(uart_fifo, &data, 1);
 }
+
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -206,9 +184,9 @@ void uart_transmit (unsigned char data)
 }
 void uart_transmit_fifo()
 {
-  char * data;
-  fifo_read(uart_fifo, data, 1);
-  uart_transmit(*data);
+  char data;
+  if (fifo_read(uart_fifo, &data, 1))
+    uart_transmit(data);
 }
 
 
@@ -227,35 +205,15 @@ int main() {
   DDRD = ~((_BV(PD2))|(_BV(PD4)));                                                                                                                  
   PORTD = ~((0 << PORTD2)|(1 << PORTD4));
 
-    EICRA |= (1 << ISC00);    // set INT0 to trigger on ANY logic change
+  EICRA |= (1 << ISC00);    // set INT0 to trigger on ANY logic change
   EIMSK |= (1 << INT0);
   
-    sei();          // enable global interrupts
+  sei();          // enable global interrupts
 
-	while(1)
-	{
-		/*
-		uart_transmit(uart_fifo->tail);
-		uart_transmit('\n');
-		uart_transmit('\r');
-		
-		uart_transmit(uart_fifo->head);
-		uart_transmit('\n');
-		uart_transmit('\n');
-		uart_transmit('\r');
-		
-		_delay_ms(1000);
-		*/
-		
-		if (count != 0)
-		{
-			uart_transmit_fifo();
-			count--;
-		}
-	}
-	return 0;
+  while(1)
+    uart_transmit_fifo();
+  return 0;
 }
-
 
 
 
