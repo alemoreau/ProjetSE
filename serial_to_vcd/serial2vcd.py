@@ -28,9 +28,6 @@ print "$var wire 1 % clock $end"
 print "$upscope $end"
 print "$enddefinitions $end"
 print "$dumpvars"
-print "0 $"
-print "0 %"
-print "$end"
 out = ""
 current_time = 0
 start_time = time.time() * 1000000
