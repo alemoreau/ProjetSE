@@ -5,8 +5,8 @@ import serial
 ser = serial.Serial(
     port='/dev/ttyACM0',
     baudrate=115200,
-    parity=serial.PARITY_ODD,
-    stopbits=serial.STOPBITS_TWO,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
     bytesize=serial.SEVENBITS
 )
 
@@ -30,16 +30,27 @@ print "$enddefinitions $end"
 print "$dumpvars"
 out = ""
 current_time = 0
-start_time = time.time() * 1000000
+start_time = 0
+data = -1
+clock = -1 
 while 1 :
     a = ser.read(1)
     out += a
     if out != "":
-        current_time = time.time() * 1000000
-    
-        print "#" + str(int(current_time - start_time))
-        print str(ord(a)%2)+"$"     #data
-        print str((ord(a)/2)%2)+"%" #clock
+        if ord(a)%2 != data and (ord(a)/2)%2 != clock: # If any change
+            # Compute timestamp
+            current_time = time.time() * 1000000
+            if start_time == 0:
+                start_time = current_time
+            print "#" + str(int(current_time - start_time))
+            # Display data change (if any)
+            if (ord(a)%2) != data:
+                data = ord(a)%2
+                print str(data)+"$"     #data
+            if ((ord(a)/2)%2) != clock:
+                clock = (ord(a)/2)%2
+                print str(clock)+"$"     #data
+            
 
 
     
