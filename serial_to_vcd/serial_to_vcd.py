@@ -5,7 +5,7 @@ ser = serial.Serial(
     port='/dev/ttyACM0',\
     baudrate=2000000,\
     parity=serial.PARITY_NONE,\
-    stopbits=serial.STOPBITS_ONE,\
+    stopbits=serial.STOPBITS_TWO,\
     bytesize=serial.EIGHTBITS,\
     timeout=1)
 
