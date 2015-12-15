@@ -49,7 +49,7 @@ while 1 :
                 print str(data)+"$"     #data
             if ((ord(a)/2)%2) != clock:
                 clock = (ord(a)/2)%2
-                print str(clock)+"$"     #data
+                print str(clock)+"%"    #clock
             
 
 
