@@ -36,7 +36,7 @@ clock = -1
 while 1 :
     a = ser.read(1)
     out += a
-    if out != "":
+    if out != ser.read():
         if ord(a)%2 != data and (ord(a)/2)%2 != clock: # If any change
             # Compute timestamp
             current_time = time.time() * 1000000
