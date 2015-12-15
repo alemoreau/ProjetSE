@@ -2,10 +2,10 @@ import serial
 import time
 
 ser = serial.Serial(
-    port='COM3',\
+    port='/dev/ttyACM0',\
     baudrate=2000000,\
     parity=serial.PARITY_NONE,\
-    stopbits=serial.STOPBITS_TWO,\
+    stopbits=serial.STOPBITS_ONE,\
     bytesize=serial.EIGHTBITS,\
     timeout=1)
 
