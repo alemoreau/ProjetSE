@@ -5,16 +5,14 @@ var unshift_char = {'0x0d': '9', '0x0e': '|', '0x15': 'q', '0x16': '1', '0x1a': 
 
 var n = 0;
 var str = '';
-//var vcdname = '../serial_to_vcd/test.vcd';
-var vcdname = './test.vcd';
 
-fs.createReadStream(vcdname)
+fs.createReadStream('./test.vcd')
     .pipe(vcd.createStream({
   	rename: {
-	    "1": 'front',
-	    "0": 'data'
+	    "6": 'front',
+	    "7": 'data'
 	},
-	ignore: ["2", "3", "4", "5", "6", "7"]
+	ignore: ["0", "1", "2", "3", "4", "5"]
     }))
     .on('begin', function (state) {
 	console.log("State:");
@@ -24,14 +22,12 @@ fs.createReadStream(vcdname)
     .on('sample', function (index, changes, last) {
 	n = (n+1) % 11;
 	str = (n == 0 || n == 9 || n == 10) ? str : str + last.data;
-
 	if(n == 10){
-	    var dat = parseInt(str, 2).toString(10);
 	    var hexVal = parseInt(str, 2).toString(16);
 	    var hexStr = "0x" + hexVal;
-//	    console.log(hexStr);
-	    if(dat != 240)
-		console.log(unshift_char[hexStr]);
+	    console.log(unshift_char.hexStr);
+	    console.log(hexStr);
+	    
 	    str = '';
 	}
 
