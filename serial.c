@@ -79,7 +79,8 @@ void uart_init (void)
   UCSR0A &= ~(_BV(FE0) | _BV(DOR0) | _BV(UPE0));
   UCSR0A |= _BV(U2X0);
   UCSR0B|=(1<<TXEN0)|(1<<RXEN0);
-  UCSR0C|=(1<<USBS0)|(3<<UCSZ00); 
+  UCSR0C=0;
+  //  UCSR0C|=(1<<USBS0)|(3<<UCSZ00); 
 }
 
 ISR(INT0_vect)
