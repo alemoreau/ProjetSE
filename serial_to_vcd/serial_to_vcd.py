@@ -43,12 +43,12 @@ while 1:
     if(donnee != ""):
     	value =ord(donnee)
 
-        current_time = time.time() * 1000000
-        #if start_time == 0:
-        #    start_time = current_time
-        print "#" + str(temps)
-        temps +=1  
-        #str(int(current_time - start_time))
+        current_time = time.time() * 10000000
+        if start_time == 0:
+            start_time = current_time
+        #print "#" + str(temps)
+        #temps +=1  
+        print "#" + str(int(current_time - start_time))
         # Display data change (if any)
         if value & 0x01 != data:
             data = value & 0x01
